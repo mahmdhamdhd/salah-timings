@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayer Times</title>   
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            direction: rtl;
+            font-family: "Tajawal", sans-serif;
+            background: linear-gradient(45deg, #240165, #05001c);
+            color: white;
+            margin: 0;
+            text-align: center;
+        }
+
+        #city-Name {
+            font-size: 100px;
+            font-weight: 200;
+            color: white;
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 80px;
+            gap: 20px;
+        }
+
+        .card {
+            width: 12%;
+            height: 300px;
+            background-color: white;
+            font-size: 20px;
+            box-shadow: 0px 10px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            background: linear-gradient(45deg, #5709ee, #7a37bf);
+            color: white;
+            font-weight: 400;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .body .time {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 70px;
+            font-size: 60px;
+            color: black;
+        }
+
+        .select-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 120px;
+        }
+
+        select {
+            width: 300px;
+            height: 35px;
+            font-size: 20px;
+            font-family: "Tajawal", sans-serif;
+            color: white;
+            border: 2px solid #5200e1;
+            border-radius: 20px;
+            text-align: center;
+            background-color: transparent;
+        }
+
+        option {
+            color: black;
+            font-family: "Tajawal", sans-serif;
+            font-size: 20px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div style="margin-top: 20px;">
+        <div>
+            <h2 id="city-Name">مصر</h2>
+            <p id="date" style="font-size: 40px; font-weight: 200;">الجمعه ٢ اغسطس</p>
+        </div>
+        <hr>
+
+        <div class="card-container">
+            <div class="card">
+                <div class="header">
+                    <h1>الفجر</h1>
+                </div>
+                <div class="body">
+                    <h1 class="time" id="fajr-time">4:30</h1>
+                </div>
+            </div>
+            <div class="card">
+                <div class="header">
+                    <h1>الشروق</h1>
+                </div>
+                <div class="body">
+                    <h1 class="time" id="sunrise-time">4:30</h1>
+                </div>
+            </div>
+            <div class="card">
+                <div class="header">
+                    <h1>الظهر</h1>
+                </div>
+                <div class="body">
+                    <h1 class="time" id="dhuhr-time">4:30</h1>
+                </div>
+            </div>
+            <div class="card">
+                <div class="header">
+                    <h1>العصر</h1>
+                </div>
+                <div class="body">
+                    <h1 class="time" id="asr-time">4:30</h1>
+                </div>
+            </div>
+            <div class="card">
+                <div class="header">
+                    <h1>المغرب</h1>
+                </div>
+                <div class="body">
+                    <h1 class="time" id="maghrib-time">4:30</h1>
+                </div>
+            </div>
+            <div class="card">
+                <div class="header">
+                    <h1>العشاء</h1>
+                </div>
+                <div class="body">
+                    <h1 class="time" id="isha-time">4:30</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="select-container">
+            <select name="city" id="city-select" onchange="fetchPrayerTimes()">
+               
+            </select>
+        </div>
+    </div>
+
+    <script>
+        let cities=[
+              "الشرقية","الفيوم"  ,"الإسكندرية"  , "القاهرة"      
+              ]
+        for(let city of cities){
+            
+          const content=  `
+            <option>${city}</option>
+            `
+            document.getElementById("city-select").innerHTML += content
+        }
+        document.getElementById("city-select").addEventListener("change", ()=>{
+            console.log (this.value)
+        })
+        function getPrayersTimingOfCity(city)
+{
+    const params = {
+                country: "EG",
+                city: city
+            };
+
+}
+
+getPrayersTimingOfCity("الفيوم")
+        function fetchPrayerTimes() {
+            const city = document.getElementById("city-select").value;
+       
+
+            axios.get("https://api.aladhan.com/v1/timingsByCity", { params: params })
+                .then(response => {
+                    const timings = response.data.data.timings;
+                    document.getElementById("fajr-time").innerHTML = timings.Fajr;
+                    document.getElementById("sunrise-time").innerHTML = timings.Sunrise;
+                    document.getElementById("dhuhr-time").innerHTML = timings.Dhuhr;
+                    document.getElementById("asr-time").innerHTML = timings.Asr;
+                    document.getElementById("maghrib-time").innerHTML = timings.Maghrib;
+                    document.getElementById("isha-time").innerHTML = timings.Isha;
+
+                    // Update date and weekday
+                    const readableDate = response.data.data.date.readable;
+                    const weekDay = response.data.data.date.hijri.weekday.ar;
+                    document.getElementById("date").innerHTML = `${weekDay} ${readableDate}`;
+
+                    console.log(response.data.data.timings);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
+
+        fetchPrayerTimes(); // Call on initial load
+    </script>
+</body>
+</html>
